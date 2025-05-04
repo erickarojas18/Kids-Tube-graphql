@@ -41,7 +41,9 @@ const {
     name: "RestrictedUser",
     fields: () => ({
       id: { type: GraphQLID },
-      name: { type: GraphQLString }
+      name: { type: GraphQLString },
+      creatorId: { type: GraphQLID } 
+
     })
   });
   
