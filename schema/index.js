@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -42,8 +43,9 @@ const {
     fields: () => ({
       id: { type: GraphQLID },
       name: { type: GraphQLString },
-      creatorId: { type: GraphQLID } 
-
+      pin: { type: GraphQLString },
+      avatar: { type: GraphQLString },
+      parentUser: { type: GraphQLID }
     })
   });
   
@@ -66,19 +68,23 @@ const {
       },
       playlists: {
         type: new GraphQLList(PlaylistType),
-        resolve() {
-          return Playlist.find();
+        args: { userId: { type: GraphQLID } },
+        resolve(_, args) {
+          return Playlist.find({ profiles: args.userId });
         }
       },
-      restrictedUsers: {
-        type: new GraphQLList(RestrictedUserType),
-        resolve() {
-          return RestrictedUser.find();
-        }
+     
+      
+    restrictedUsers: {
+      type: new GraphQLList(RestrictedUserType),
+      args: { parentUser: { type: GraphQLID } },
+      resolve(_, args) {
+        return RestrictedUser.find({ parentUser: new mongoose.Types.ObjectId(args.parentUser) });
+
       }
     }
+  }
   });
-  
   module.exports = new GraphQLSchema({
     query: RootQuery
   });
